@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Marine Weather</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-size: cover;
+      background-position: center;
+      color: white;
+      min-height: 100vh;
+    }
+    nav {
+      background: rgba(0,0,0,0.6);
+      padding: 15px;
+      text-align: center;
+    }
+    nav a {
+      color: white;
+      margin: 0 15px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    nav a:hover {
+      color: #1abc9c;
+    }
+    .container {
+      max-width: 800px;
+      margin: auto;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+    }
+    .marine-box {
+      background: rgba(0, 0, 0, 0.6);
+      padding: 20px;
+      margin-top: 20px;
+      border-radius: 10px;
+    }
+    .marine-box p {
+      margin: 8px 0;
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="current.html">Current</a>
+    <a href="forecast.html">Forecast</a>
+    <a href="astro.html">Astro</a>
+    <a href="marine.html">Marine</a>
+  </nav>
+
+  <div class="container">
+    <h1>Marine Weather Data</h1>
+    <div id="marineInfo" class="marine-box">
+      <p><strong>Wave Height:</strong> <span id="waveHeight">--</span> m</p>
+      <p><strong>Swell Height:</strong> <span id="swellHeight">--</span> m</p>
+      <p><strong>Swell Period:</strong> <span id="swellPeriod">--</span> sec</p>
+      <p><strong>Swell Direction:</strong> <span id="swellDir">--</span></p>
+      <p><strong>Water Temp:</strong> <span id="waterTemp">--</span> °C</p>
+      <p><strong>Tide Type:</strong> <span id="tideType">--</span></p>
+      <p><strong>Tide Time:</strong> <span id="tideTime">--</span></p>
+      <p><strong>Tide Height:</strong> <span id="tideHeight">--</span> m</p>
+    </div>
+  </div>
+
+  <script>
+    const API_KEY = '6f5aa3f841a341daae460827250602';
+    const city = localStorage.getItem('city');
+
+    async function fetchMarine() {
+      if (!city) {
+        alert("City not found. Go to Home.");
+        window.location.href = 'index.html';
+        return;
+      }
+
+      const today = new Date().toISOString().split('T')[0];
+      const res = await fetch(`https://api.weatherapi.com/v1/marine.json?key=${API_KEY}&q=${city}&dt=${today}`);
+      const data = await res.json();
+
+      document.body.style.backgroundImage = "url('marine.jpg')";
+
+      const hour = data.forecast.forecastday[0].hour[12];
+      const tide = data.forecast.forecastday[0].astro;
+
+      document.getElementById('waveHeight').textContent = hour.sig_ht_mt || '--';
+      document.getElementById('swellHeight').textContent = hour.swell_ht_mt || '--';
+      document.getElementById('swellPeriod').textContent = hour.swell_period_secs || '--';
+      document.getElementById('swellDir').textContent = hour.swell_dir_16_point || '--';
+      document.getElementById('waterTemp').textContent = hour.water_temp_c || '--';
+      document.getElementById('tideType').textContent = tide.tide_type || '--';
+      document.getElementById('tideTime').textContent = tide.tide_time || '--';
+      document.getElementById('tideHeight').textContent = tide.tide_height_mt || '--';
+    }
+
+    fetchMarine();
+  </script>
+</body>
+</html>

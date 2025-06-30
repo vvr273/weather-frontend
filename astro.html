@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Astronomy Info</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-size: cover;
+      background-position: center;
+      color: white;
+      min-height: 100vh;
+    }
+    nav {
+      background: rgba(0,0,0,0.6);
+      padding: 15px;
+      text-align: center;
+    }
+    nav a {
+      color: white;
+      margin: 0 15px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    nav a:hover {
+      color: #1abc9c;
+    }
+    .container {
+      max-width: 700px;
+      margin: auto;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+    }
+    .astro-box {
+      background: rgba(0, 0, 0, 0.6);
+      padding: 20px;
+      margin-top: 20px;
+      border-radius: 10px;
+    }
+    .astro-box p {
+      margin: 10px 0;
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="current.html">Current</a>
+    <a href="forecast.html">Forecast</a>
+    <a href="astro.html">Astro</a>
+    <a href="marine.html">Marine</a>
+  </nav>
+
+  <div class="container">
+    <h1>Astronomy Details</h1>
+    <div id="astroInfo" class="astro-box">
+      <p><strong>Sunrise:</strong> <span id="sunrise">--</span></p>
+      <p><strong>Sunset:</strong> <span id="sunset">--</span></p>
+      <p><strong>Moonrise:</strong> <span id="moonrise">--</span></p>
+      <p><strong>Moonset:</strong> <span id="moonset">--</span></p>
+      <p><strong>Moon Phase:</strong> <span id="moon_phase">--</span></p>
+      <p><strong>Moon Illumination:</strong> <span id="moon_illumination">--%</span></p>
+      <p><strong>Sun Up:</strong> <span id="sun_up">--</span></p>
+      <p><strong>Moon Up:</strong> <span id="moon_up">--</span></p>
+    </div>
+  </div>
+
+  <script>
+    const API_KEY = '6f5aa3f841a341daae460827250602';
+    const city = localStorage.getItem('city');
+
+    async function fetchAstro() {
+      if (!city) {
+        alert("City not found. Go to Home.");
+        window.location.href = 'index.html';
+        return;
+      }
+
+      const today = new Date().toISOString().split('T')[0];
+      const res = await fetch(`https://api.weatherapi.com/v1/astronomy.json?key=${API_KEY}&q=${city}&dt=${today}`);
+      const data = await res.json();
+
+      document.body.style.backgroundImage = `url('${data.location.localtime.includes(' ') && data.location.localtime.split(' ')[1].split(':')[0] < 18 ? 'sunny.jpg' : 'night.jpg'}')`;
+
+      const astro = data.astronomy.astro;
+
+      document.getElementById('sunrise').textContent = astro.sunrise;
+      document.getElementById('sunset').textContent = astro.sunset;
+      document.getElementById('moonrise').textContent = astro.moonrise;
+      document.getElementById('moonset').textContent = astro.moonset;
+      document.getElementById('moon_phase').textContent = astro.moon_phase;
+      document.getElementById('moon_illumination').textContent = astro.moon_illumination;
+      document.getElementById('sun_up').textContent = astro.is_sun_up == 1 ? 'Yes' : 'No';
+      document.getElementById('moon_up').textContent = astro.is_moon_up == 1 ? 'Yes' : 'No';
+    }
+
+    fetchAstro();
+  </script>
+</body>
+</html>

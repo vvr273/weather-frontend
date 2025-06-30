@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Current Weather</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background-size: cover;
+      background-position: center;
+      color: white;
+      min-height: 100vh;
+    }
+    nav {
+      background: rgba(0, 0, 0, 0.6);
+      padding: 15px;
+      text-align: center;
+    }
+    nav a {
+      color: white;
+      margin: 0 15px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    nav a:hover {
+      color: #1abc9c;
+    }
+    .container {
+      padding: 20px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    h1 {
+      text-align: center;
+    }
+    .loading {
+      text-align: center;
+      font-size: 20px;
+      margin-top: 50px;
+    }
+    .weather-box {
+      background: rgba(0, 0, 0, 0.5);
+      padding: 20px;
+      border-radius: 10px;
+      margin-top: 20px;
+    }
+    .weather-box img {
+      vertical-align: middle;
+    }
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .col {
+      flex: 1 1 45%;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 10px;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="current.html">Current</a>
+    <a href="forecast.html">Forecast</a>
+    <a href="astro.html">Astro</a>
+    <a href="marine.html">Marine</a>
+  </nav>
+
+  <div class="container">
+    <h1>Current Weather</h1>
+    <div id="loading" class="loading">Loading weather data...</div>
+    <div id="weatherInfo" class="weather-box" style="display: none;">
+      <h2 id="location"></h2>
+      <img id="icon" src="" alt="icon" /> <span id="desc"></span>
+      <div class="row">
+        <div class="col">Temperature: <span id="temp"></span></div>
+        <div class="col">Feels Like: <span id="feels"></span></div>
+        <div class="col">Humidity: <span id="humidity"></span></div>
+        <div class="col">Cloud Cover: <span id="cloud"></span></div>
+        <div class="col">Wind: <span id="wind"></span></div>
+        <div class="col">Pressure: <span id="pressure"></span></div>
+        <div class="col">Visibility: <span id="vis"></span></div>
+        <div class="col">Gust: <span id="gust"></span></div>
+        <div class="col">UV Index: <span id="uv"></span></div>
+        <div class="col">Dew Point: <span id="dew"></span></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API_KEY = '6f5aa3f841a341daae460827250602';
+    const city = localStorage.getItem('city');
+
+    async function fetchCurrentWeather() {
+      if (!city) {
+        alert("No city selected. Please go back to home page.");
+        window.location.href = 'index.html';
+        return;
+      }
+
+      try {
+        const res = await fetch(`https://api.weatherapi.com/v1/current.json?key=${API_KEY}&q=${city}`);
+        const data = await res.json();
+        if (data.error) throw new Error(data.error.message);
+
+        const c = data.current;
+        const l = data.location;
+        
+        document.body.style.backgroundImage = c.is_day
+          ? "url('sunny.jpg')"
+          : "url('night.jpg')";
+
+        document.getElementById('location').textContent = `${l.name}, ${l.country}`;
+        document.getElementById('icon').src = `https:${c.condition.icon}`;
+        document.getElementById('desc').textContent = c.condition.text;
+        document.getElementById('temp').textContent = `${c.temp_c}°C / ${c.temp_f}°F`;
+        document.getElementById('feels').textContent = `${c.feelslike_c}°C / ${c.feelslike_f}°F`;
+        document.getElementById('humidity').textContent = `${c.humidity}%`;
+        document.getElementById('cloud').textContent = `${c.cloud}%`;
+        document.getElementById('wind').textContent = `${c.wind_kph} kph ${c.wind_dir}`;
+        document.getElementById('pressure').textContent = `${c.pressure_mb} mb`;
+        document.getElementById('vis').textContent = `${c.vis_km} km`;
+        document.getElementById('gust').textContent = `${c.gust_kph} kph`;
+        document.getElementById('uv').textContent = c.uv;
+        document.getElementById('dew').textContent = `${c.dewpoint_c ?? '-'}°C`;
+
+        document.getElementById('weatherInfo').style.display = 'block';
+        document.getElementById('loading').style.display = 'none';
+      } catch (err) {
+        alert("Error: " + err.message);
+        document.getElementById('loading').textContent = 'Failed to load data.';
+      }
+    }
+
+    fetchCurrentWeather();
+  </script>
+</body>
+</html>

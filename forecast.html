@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>3-Day Forecast</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-size: cover;
+      background-position: center;
+      color: white;
+      min-height: 100vh;
+    }
+    nav {
+      background: rgba(0,0,0,0.6);
+      padding: 15px;
+      text-align: center;
+    }
+    nav a {
+      color: white;
+      margin: 0 15px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    nav a:hover {
+      color: #1abc9c;
+    }
+    .container {
+      max-width: 1000px;
+      margin: auto;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+    }
+    .forecast-day {
+      background: rgba(0,0,0,0.5);
+      padding: 15px;
+      margin-top: 20px;
+      border-radius: 10px;
+    }
+    .hourly {
+      display: flex;
+      overflow-x: auto;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .hour-box {
+      min-width: 140px;
+      background: rgba(255,255,255,0.1);
+      padding: 10px;
+      border-radius: 8px;
+      flex-shrink: 0;
+    }
+    .hour-box img {
+      width: 40px;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="current.html">Current</a>
+    <a href="forecast.html">Forecast</a>
+    <a href="astro.html">Astro</a>
+    <a href="marine.html">Marine</a>
+  </nav>
+
+  <div class="container">
+    <h1>3-Day Forecast</h1>
+    <div id="forecast"></div>
+  </div>
+
+  <script>
+    const API_KEY = '6f5aa3f841a341daae460827250602';
+    const city = localStorage.getItem('city');
+
+    async function fetchForecast() {
+      if (!city) {
+        alert("No city selected. Please go to Home.");
+        window.location.href = 'index.html';
+        return;
+      }
+
+      const res = await fetch(`https://api.weatherapi.com/v1/forecast.json?key=${API_KEY}&q=${city}&days=3&aqi=no&alerts=no`);
+      const data = await res.json();
+
+      document.body.style.backgroundImage = data.current.is_day
+        ? "url('sunny.jpg')"
+        : "url('night.jpg')";
+
+      const forecastContainer = document.getElementById('forecast');
+      data.forecast.forecastday.forEach(day => {
+        const dayBox = document.createElement('div');
+        dayBox.className = 'forecast-day';
+        dayBox.innerHTML = `
+          <h2>${day.date}</h2>
+          <p><strong>Max Temp:</strong> ${day.day.maxtemp_c}°C | Min Temp: ${day.day.mintemp_c}°C</p>
+          <p><strong>Condition:</strong> ${day.day.condition.text} <img src="https:${day.day.condition.icon}" alt="icon"/></p>
+          <p><strong>Chance of Rain:</strong> ${day.day.daily_chance_of_rain}%</p>
+          <div class="hourly" id="hourly-${day.date}"></div>
+        `;
+        forecastContainer.appendChild(dayBox);
+
+        const hourlyDiv = dayBox.querySelector('.hourly');
+        day.hour.forEach(hour => {
+          const hourBox = document.createElement('div');
+          hourBox.className = 'hour-box';
+          hourBox.innerHTML = `
+            <p>${hour.time.split(' ')[1]}</p>
+            <img src="https:${hour.condition.icon}" alt="icon"/>
+            <p>${hour.temp_c}°C</p>
+            <p>${hour.condition.text}</p>
+            <p>Rain: ${hour.chance_of_rain}%</p>
+          `;
+          hourlyDiv.appendChild(hourBox);
+        });
+      });
+    }
+
+    fetchForecast();
+  </script>
+</body>
+</html>

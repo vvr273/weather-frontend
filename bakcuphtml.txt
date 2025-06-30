@@ -1,0 +1,172 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Weather Dashboard - Search</title>
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(to right, #2c3e50, #3498db);
+            font-family: Arial, sans-serif;
+            color: white;
+        }
+        .search-box {
+            background: rgba(255,255,255,0.1);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.3);
+            text-align: center;
+        }
+        input {
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            width: 250px;
+            font-size: 16px;
+        }
+        button {
+            margin-left: 10px;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 10px;
+            background: #2980b9;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #1abc9c;
+        }
+    </style>
+</head>
+<body>
+    <div class="search-box">
+        <h1>🌤️ Weather Dashboard</h1>
+        <p>Enter your city to get started:</p>
+        <input type="text" id="cityInput" placeholder="e.g. London" />
+        <button onclick="searchCity()">Go</button>
+    </div>
+
+    <script>
+        function searchCity() {
+            const city = document.getElementById("cityInput").value.trim();
+            if (!city) {
+                alert("Please enter a city name.");
+                return;
+            }
+            localStorage.setItem("city", city);
+            window.location.href = "current.html";
+        }
+    </script>
+</body>
+</html> -->
+
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Weather App (Home)</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to bottom right, #2c3e50, #3498db);
+      color: white;
+      text-align: center;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+    nav {
+      background: rgba(0,0,0,0.6);
+      width: 100%;
+      padding: 15px;
+      text-align: center;
+      position: fixed;
+      top: 0;
+      left: 0;
+    }
+    nav a {
+      color: white;
+      margin: 0 15px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    nav a:hover {
+      color: #1abc9c;
+    }
+    h1 {
+      margin-top: 100px;
+    }
+    .location-btn {
+      padding: 15px 30px;
+      background: #1abc9c;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 18px;
+      margin-top: 20px;
+      cursor: pointer;
+    }
+    .location-btn:hover {
+      background: #16a085;
+    }
+    .result {
+      margin-top: 30px;
+      font-size: 20px;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="current.html">Current</a>
+    <a href="forecast.html">Forecast</a>
+    <a href="astro.html">Astro</a>
+    <a href="marine.html">Marine</a>
+  </nav>
+
+  <h1>Welcome to Weather App</h1>
+  <button class="location-btn" onclick="getLocationWeather()">Use My Location</button>
+  <div class="result" id="locationResult"></div>
+
+  <script>
+    const API_KEY = '6f5aa3f841a341daae460827250602';
+
+    function getLocationWeather() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(async position => {
+          const lat = position.coords.latitude;
+          const lon = position.coords.longitude;
+          const res = await fetch(`https://api.weatherapi.com/v1/current.json?key=${API_KEY}&q=${lat},${lon}`);
+          const data = await res.json();
+
+          localStorage.setItem("city", data.location.name);
+
+          document.getElementById("locationResult").innerHTML = `
+            <strong>${data.location.name}, ${data.location.region}, ${data.location.country}</strong><br>
+            Temperature: ${data.current.temp_c}°C / ${data.current.temp_f}°F<br>
+            Condition: ${data.current.condition.text}<br>
+            <br>
+            <a href='current.html' style='color: #f1c40f;'>Go to Full Details</a>
+          `;
+        }, error => {
+          document.getElementById("locationResult").textContent = "Location access denied or unavailable.";
+        });
+      } else {
+        document.getElementById("locationResult").textContent = "Geolocation not supported by this browser.";
+      }
+    }
+  </script>
+</body>
+</html> -->
