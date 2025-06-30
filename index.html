@@ -16,6 +16,7 @@
       flex-direction: column;
       justify-content: center;
       align-items: center;
+      padding-top: 80px;
     }
     nav {
       background: rgba(0, 0, 0, 0.6);
@@ -36,20 +37,33 @@
       color: #1abc9c;
     }
     h1 {
-      margin-top: 100px;
+      margin-top: 30px;
     }
-    .location-btn {
-      padding: 15px 30px;
+    .location-btn, .search-btn {
+      padding: 12px 24px;
       background: #1abc9c;
       color: white;
       border: none;
       border-radius: 8px;
-      font-size: 18px;
-      margin-top: 20px;
+      font-size: 16px;
+      margin-top: 15px;
       cursor: pointer;
     }
-    .location-btn:hover {
+    .location-btn:hover, .search-btn:hover {
       background: #16a085;
+    }
+    .search-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 20px;
+    }
+    .search-bar {
+      padding: 10px;
+      font-size: 16px;
+      width: 250px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
     }
     .result {
       margin-top: 30px;
@@ -67,7 +81,14 @@
   </nav>
 
   <h1>Welcome to Weather App</h1>
+
   <button class="location-btn" onclick="getLocationWeather()">Use My Location</button>
+
+  <div class="search-container">
+    <input type="text" id="cityInput" class="search-bar" placeholder="Enter city name" />
+    <button class="search-btn" onclick="searchCity()">Search</button>
+  </div>
+
   <div class="result" id="locationResult"></div>
 
   <script>
@@ -87,13 +108,7 @@
 
             localStorage.setItem("city", data.location.name);
 
-            resultDiv.innerHTML = `
-              <strong>${data.location.name}, ${data.location.region}, ${data.location.country}</strong><br>
-              Temperature: ${data.current.temp_c}°C / ${data.current.temp_f}°F<br>
-              Condition: ${data.current.condition.text}<br>
-              <br>
-              <a href='current.html' style='color: #f1c40f;'>Go to Full Details</a>
-            `;
+            resultDiv.innerHTML = generateResultHTML(data);
           } catch (error) {
             resultDiv.innerHTML = "Failed to fetch weather data.";
           }
@@ -103,6 +118,42 @@
       } else {
         resultDiv.innerHTML = "Geolocation not supported by this browser.";
       }
+    }
+
+    async function searchCity() {
+      const city = document.getElementById("cityInput").value.trim();
+      const resultDiv = document.getElementById("locationResult");
+
+      if (!city) {
+        resultDiv.innerHTML = "Please enter a city name.";
+        return;
+      }
+
+      resultDiv.innerHTML = "Searching weather data...";
+
+      try {
+        const res = await fetch(`https://api.weatherapi.com/v1/current.json?key=${API_KEY}&q=${city}`);
+        const data = await res.json();
+
+        if (data.error) throw new Error(data.error.message);
+
+        localStorage.setItem("city", data.location.name);
+
+        resultDiv.innerHTML = generateResultHTML(data);
+      } catch (error) {
+        resultDiv.innerHTML = "City not found.";
+      }
+    }
+
+    function generateResultHTML(data) {
+      return `
+        <strong>${data.location.name}, ${data.location.region}, ${data.location.country}</strong><br>
+        Temperature: ${data.current.temp_c}°C / ${data.current.temp_f}°F<br>
+        Condition: ${data.current.condition.text}<br>
+        <img src="https:${data.current.condition.icon}" alt="icon"/><br>
+        <br>
+        <a href='current.html' style='color: #f1c40f;'>Go to Full Details</a>
+      `;
     }
   </script>
 </body>
