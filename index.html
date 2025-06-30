@@ -16,34 +16,75 @@
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      padding-top: 80px;
+      padding-top: 100px;
     }
 
-    nav {
-      background: rgba(0, 0, 0, 0.6);
-      width: 100%;
-      padding: 15px;
-      text-align: center;
+    /* Navbar Styling */
+    .navbar {
       position: fixed;
       top: 0;
       left: 0;
+      width: 100%;
+      background: rgba(0, 0, 0, 0.7);
       display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 10px;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 20px;
       z-index: 100;
     }
 
-    nav a {
+    .navbar .brand {
+      font-size: 20px;
+      font-weight: bold;
+      color: #fff;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 15px;
+    }
+
+    .nav-links a {
       color: white;
       text-decoration: none;
       font-weight: bold;
-      padding: 8px 12px;
-      border-radius: 6px;
+      padding: 6px 10px;
+      border-radius: 4px;
     }
 
-    nav a:hover {
-      background-color: #1abc9c;
+    .nav-links a:hover {
+      background: #1abc9c;
+    }
+
+    .menu-btn {
+      display: none;
+      font-size: 24px;
+      background: none;
+      border: none;
+      color: white;
+      cursor: pointer;
+    }
+
+    @media (max-width: 768px) {
+      .menu-btn {
+        display: block;
+      }
+
+      .nav-links {
+        display: none;
+        flex-direction: column;
+        background: rgba(0, 0, 0, 0.9);
+        position: absolute;
+        top: 60px;
+        left: 0;
+        width: 100%;
+        text-align: center;
+        padding: 10px 0;
+      }
+
+      .nav-links.show {
+        display: flex;
+      }
     }
 
     h1 {
@@ -59,10 +100,6 @@
       font-size: 16px;
       margin-top: 15px;
       cursor: pointer;
-    }
-
-    .location-btn:hover, .search-btn:hover {
-      background: #16a085;
     }
 
     .search-container {
@@ -87,35 +124,20 @@
       padding: 10px;
       max-width: 90%;
     }
-
-    img {
-      margin-top: 10px;
-    }
-
-    @media (max-width: 600px) {
-      nav {
-        flex-direction: column;
-        align-items: center;
-      }
-
-      nav a {
-        display: block;
-        margin: 5px 0;
-      }
-
-      h1 {
-        font-size: 24px;
-      }
-    }
   </style>
 </head>
 <body>
-  <nav>
-    <a href="index.html">Home</a>
-    <a href="current.html">Current</a>
-    <a href="forecast.html">Forecast</a>
-    <a href="astro.html">Astro</a>
-    <a href="marine.html">Marine</a>
+
+  <nav class="navbar">
+    <div class="brand">Weather App</div>
+    <button class="menu-btn" onclick="toggleMenu()">☰ Menu</button>
+    <div class="nav-links" id="navLinks">
+      <a href="index.html">Home</a>
+      <a href="current.html">Current</a>
+      <a href="forecast.html">Forecast</a>
+      <a href="astro.html">Astro</a>
+      <a href="marine.html">Marine</a>
+    </div>
   </nav>
 
   <h1>Welcome to Weather App</h1>
@@ -131,6 +153,11 @@
 
   <script>
     const API_KEY = '6f5aa3f841a341daae460827250602';
+
+    function toggleMenu() {
+      const nav = document.getElementById("navLinks");
+      nav.classList.toggle("show");
+    }
 
     function getLocationWeather() {
       const resultDiv = document.getElementById("locationResult");
